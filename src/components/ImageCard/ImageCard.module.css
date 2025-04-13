@@ -1,0 +1,9 @@
+img {
+  object-fit: cover;
+}
+
+.img:focus,
+.img:hover {
+  box-shadow: 0 0 20px blue;
+  cursor: pointer;
+}

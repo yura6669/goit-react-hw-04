@@ -1,0 +1,18 @@
+* {
+  padding: 0;
+  list-style: none;
+}
+
+body {
+  background-color: black;
+  color: white;
+  margin: 0;
+}
+
+p {
+  margin: 0;
+}
+
+svg {
+  margin: 0;
+}
