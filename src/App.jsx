@@ -5,7 +5,7 @@ import LoadMoreBtn from "./components/LoadMoreBtn/LoadMoreBtn";
 import ErrorMessage from "./components/ErrorMessage/ErrorMessage";
 import axios from "axios";
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { getGallery } from './core/gallery.js';
 import ImageModal from "./components/ImageModal/ImageModal";
 
@@ -20,49 +20,20 @@ function App() {
   const [isOpenModal, setIsOpenModal] = useState(false);
   const [selectedItem, setSelectedItem] = useState(null);
 
-  const onSearch = (query) => { 
-    setLoading(true);
-    setError('');
-    setItems([]);
-    setPage(1);
-    setQuery(query);
-    setTotalPages(0);
+  useEffect(() => {
+    if (query === '') {
+      return;
+    }
 
-    const url = getGallery(query, 1);
-    axios.get(url)
-      .then(response => {
-        const { results, total_pages } = response.data;
-        setItems(results);
-        setTotalPages(total_pages);
-        if (page < total_pages) { 
-          const nextPage = page + 1;
-          setPage(nextPage);
-        }
-        if (results.length === 0) { 
-          setError('No images found. Please try a different search term.');
-        }
-      })
-      .catch(() => {
-        setError('Error fetching data. Please try again later.');
-      })
-      .finally(() => {
-        setLoading(false);
-      });
-  }
-
-  const onLoadMore = () => { 
     setLoading(true);
     setError('');
 
     const url = getGallery(query, page);
     axios.get(url)
       .then(response => {
-        const { results } = response.data;
+        const { results, total_pages } = response.data;
         setItems(prevItems => [...prevItems, ...results]);
-        if (page < totalPages) { 
-          const nextPage = page + 1;
-          setPage(nextPage);
-        }
+        setTotalPages(total_pages);
       })
       .catch(() => {
         setError('Error fetching data. Please try again later.');
@@ -70,7 +41,19 @@ function App() {
       .finally(() => {
         setLoading(false);
       });
+  }, [query, page]);
+  
+  const onSearch = (query) => { 
+    setQuery(query);
+    setPage(1);
+    setItems([]);
+    setTotalPages(0);
+    setError('');
   }
+
+  const onLoadMore = () => {
+    setPage(prevPage => prevPage + 1);
+   }
 
   const onOpenModal = (item) => { 
     setIsOpenModal(true);
